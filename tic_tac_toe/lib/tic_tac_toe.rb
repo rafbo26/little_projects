@@ -4,15 +4,18 @@ class Game
     @board = Array.new(3) { Array.new(3, " ") }
     @displayed_board = Array.new(6)
     @winning_patterns = Array.new(8)
-    set_board
     @game_sequence = []
+    @all_sequences = []
     @players = ["X", "O"]
     @round = 0
+    @moves = 0
     @stats = { "X" => 0, "O" => 0 }
+    @next_move = "X"
+    set_board
   end
   
   def game_over?
-    check_win
+    false
   end
   
   def set_board
@@ -38,10 +41,16 @@ class Game
     puts
     @displayed_board.each { |line| puts line }
     puts
-    @board.each { |lines| p lines }
+    puts "Next move: #{@next_move}"
     puts
+    # @board.each { |lines| p lines }
+    # puts
   end
   
+  def next_move
+    @next_move = @players[(@round + @moves) % 2]
+  end
+
   def ask_user_for_coords
     print "Please write coordinates for your next move (ie. 'A1', 'B3' 'C2' etc.):  "
     coords = gets.chomp
@@ -59,7 +68,7 @@ class Game
     else
       if !@game_sequence.include?([y, x])
         update_board(y, x)
-        @round += 1
+        @moves += 1
         check_win
       else
         puts
@@ -71,18 +80,56 @@ class Game
   
   def update_board(y, x)
     @game_sequence << [y, x]
-    @board[y][x] = @players[@round % 2]
+    @board[y][x] = next_move
     print_board
-
   end
   
   def check_win
-    if @winning_patterns.any? { |array| array.all? { |ele| ele == "X" } }
-      @stats["X"] += 1
-      true
-    elsif @winning_patterns.any? { |array| array.all? { |ele| ele == "O" } }
-      @stats["O"] += 1
-      true
+    winner = ""
+    winner = "X" if @winning_patterns.any? { |array| array.all? { |ele| ele == "X" } }
+    winner = "O" if @winning_patterns.any? { |array| array.all? { |ele| ele == "O" } }
+    p winner
+    end_round(winner)
+  end
+
+  def end_round(winner)
+    if winner == ""
+      false
+    else
+      @stats[winner] += 1
+      @board = Array.new(3) { Array.new(3, " ") }
+      @displayed_board = Array.new(6)
+      @winning_patterns = Array.new(8)
+      @all_sequences << @game_sequence
+      @game_sequence = []
+      @round += 1
+      @moves = 0
+      puts
+      puts "------------------------------------------------------"
+      puts
+      puts winner + " wins round -- #{@round}."
+      puts
+      puts "X - #{@stats["X"]} : #{@stats["O"]} - O"
+      puts
+      puts "------------------------------------------------------"
+      puts
+      ask_for_another_round
     end
   end
+
+  def ask_for_another_round
+    puts
+    puts "Press ENTER to play another round or type 'quit' to finish the game. "
+    puts
+    input = gets.chomp
+    if input == ""
+      print_board
+      ask_user_for_coords
+    elsif input == "quit"
+      # end game
+    else
+      ask_for_another_round
+    end
+  end
+    
 end
