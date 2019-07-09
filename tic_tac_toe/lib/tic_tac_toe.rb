@@ -39,7 +39,7 @@ class Game
 
   def strings(name)
     str = { "next_move"    => "Please write coordinates for your next move (ie. 'A1', 'B3' 'C2' etc.):  ",
-            "wrong_coords" => "\nPlease use correct format for coordinates. (Pick A, B or C for column and 1, 2, 3 for row ie. 'A1' or 'B2'): \n",
+            "wrong_coords" => "\nPlease use correct format for coordinates. (Pick A, B or C for column and 1, 2, 3 for row ie. 'A1' or 'B2'): \n\n",
             "taken_coords" => "\nThese coordinates are not empty. Try again. \n",
             "next_round"   => "Press ENTER to play another round or type 'quit' to finish the game. ",
             "current_move" => "\nNext move: #{@next_move} \n\n",
@@ -69,12 +69,16 @@ class Game
   end
   
   def try_coords(coords)
-    if coords.length != 2
+    col = "abc"
+    row = "123"
+    co_col = coords[0]
+    co_row = coords[1]
+    if coords.length != 2 || !col.include?(co_col.downcase) || !row.include?(co_row)
       puts strings("wrong_coords")
       ask_user_for_coords
     else
-      x = "abc".index(coords[0].downcase)
-      y = "123".index(coords[1])
+      x = col.index(co_col.downcase)
+      y = row.index(co_row)
       if !@game_sequence.include?([y, x])
         update_board(y, x)
         check_win
