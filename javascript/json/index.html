@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Our superheroes</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Faster+One"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header></header>
+
+    <section></section>
+
+    <script>
+      var header = document.querySelector("header");
+      var section = document.querySelector("section");
+      var requestURL =
+        "https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json";
+      var request = new XMLHttpRequest();
+
+      request.open("GET", requestURL);
+      request.responseType = "json";
+      request.send();
+
+      request.onload = function() {
+        var superHeroes = request.response;
+        populateHeader(superHeroes);
+        showHeroes(superHeroes);
+      };
+
+      function populateHeader(heroes) {
+        let title = document.createElement("h1");
+        title.textContent = heroes.squadName;
+        header.appendChild(title);
+
+        let paragraph = document.createElement("p");
+        paragraph.textContent = `Hometown: ${heroes.homeTown} 
+        // Formed: ${heroes.formed}`;
+        header.appendChild(paragraph);
+      }
+
+      function showHeroes(heroes) {
+        let members = heroes.members;
+        members.forEach(member => {
+          let article = document.createElement("article");
+          let title = document.createElement("h2");
+          let paragraph1 = document.createElement("p");
+          let paragraph2 = document.createElement("p");
+          let paragraph3 = document.createElement("p");
+          let list = document.createElement("ul");
+
+          title.textContent = member.name;
+          paragraph1.textContent = `Secret identity: ${member.secretIdentity}`;
+          paragraph2.textContent = `Age: ${member.age}`;
+          paragraph3.textContent = "Superpowers:";
+
+          let powers = member.powers;
+          powers.forEach(power => {
+            let li = document.createElement("li");
+            li.textContent = power;
+            list.appendChild(li);
+          });
+
+          article.appendChild(title);
+          article.appendChild(paragraph1);
+          article.appendChild(paragraph2);
+          article.appendChild(paragraph3);
+          article.appendChild(list);
+
+          section.appendChild(article);
+        });
+      }
+    </script>
+  </body>
+</html>
